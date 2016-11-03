@@ -7,9 +7,8 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
@@ -39,7 +38,6 @@ public class ArticleDetailFragment extends Fragment implements
     private static final String TAG = "ArticleDetailFragment";
 
     public static final String ARG_ITEM_ID = "item_id";
-    private static final float PARALLAX_FACTOR = 1.25f;
 
     private Cursor mCursor;
     private long mItemId;
@@ -122,31 +120,30 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
     private void updateUiWithGeneratedColors(Bitmap bitmap) {
+        mPhotoContainerView.setCollapsedTitleTextColor(Color.WHITE);
         Palette palette = new Palette.Builder(bitmap).generate();
         if (palette.getVibrantSwatch() != null) {
             applySwatch(palette.getVibrantSwatch());
         } else if (palette.getDominantSwatch() != null) {
-            applySwatch(palette.getVibrantSwatch());
+            applySwatch(palette.getDominantSwatch());
         } else if (palette.getMutedSwatch() != null) {
             applySwatch(palette.getMutedSwatch());
         } else {
-            mPhotoContainerView.setCollapsedTitleTextColor(Color.WHITE);
+            int color = palette.getDominantColor(Color.DKGRAY);
+            applyColorToView(color);
             mPhotoContainerView.setExpandedTitleColor(Color.WHITE);
         }
     }
 
 
-    private void applySwatch(Palette.Swatch swatch) {
-        if (swatch == null) {
-            return;
-        }
-        mPhotoContainerView.setCollapsedTitleTextColor(swatch.getTitleTextColor());
-        mPhotoContainerView.setExpandedTitleColor(swatch.getTitleTextColor());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getActivityCast().getWindow()
-                    .setStatusBarColor(swatch.getRgb());
-        }
-        mPhotoContainerView.setContentScrimColor(swatch.getRgb());
+    private void applySwatch(@NonNull Palette.Swatch swatch) {
+        mPhotoContainerView.setExpandedTitleColor(swatch.getBodyTextColor());
+        applyColorToView(swatch.getRgb());
+    }
+
+    private void applyColorToView(int colorToBeApplied) {
+        mPhotoContainerView.setBackgroundColor(colorToBeApplied);
+        mPhotoContainerView.setContentScrimColor(colorToBeApplied);
     }
 
     private void bindViews() {
@@ -158,7 +155,7 @@ public class ArticleDetailFragment extends Fragment implements
         TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
         TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
-        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
+        bodyView.setTypeface(TypefaceHelper.getTypeface(getResources(), TypefaceHelper.FONT_ROSARIO_REGULAR));
 
         if (mCursor != null) {
             mRootView.setAlpha(0);
@@ -172,7 +169,7 @@ public class ArticleDetailFragment extends Fragment implements
                             mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
                             System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
                             DateUtils.FORMAT_ABBREV_ALL).toString()
-                            + " by <font color='#ffffff'>"
+                            + " by <font color='#000'>"
                             + mCursor.getString(ArticleLoader.Query.AUTHOR)
                             + "</font>"));
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
