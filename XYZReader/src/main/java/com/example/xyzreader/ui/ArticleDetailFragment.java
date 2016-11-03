@@ -116,6 +116,7 @@ public class ArticleDetailFragment extends Fragment implements
             @Override
             public void onClick(View view) {
                 //onOptionsItemSelected not called https://stackoverflow.com/questions/26588917/appcompat-v7-toolbar-onoptionsitemselected-not-called/26590274#26590274
+                getActivityCast().supportFinishAfterTransition();
                 NavUtils.navigateUpFromSameTask(getActivity());
             }
         });

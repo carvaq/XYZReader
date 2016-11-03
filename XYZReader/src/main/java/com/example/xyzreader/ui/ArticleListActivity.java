@@ -8,6 +8,9 @@ import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -123,8 +126,19 @@ public class ArticleListActivity extends AppCompatActivity implements
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
+
+                    Pair<View, String> p1 = Pair.create((View) vh.subtitleView,
+                            getString(R.string.transition_subtitle));
+                    Pair<View, String> p2 = Pair.create((View) vh.titleView,
+                            getString(R.string.transition_title));
+                    Pair<View, String> p3 = Pair.create((View) vh.thumbnailView,
+                            getString(R.string.transition_image));
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(ArticleListActivity.this, p1, p2, p3);
+
+                    startActivity(intent, options.toBundle());
                 }
             });
             return vh;
@@ -134,6 +148,9 @@ public class ArticleListActivity extends AppCompatActivity implements
         public void onBindViewHolder(ViewHolder holder, int position) {
             mCursor.moveToPosition(position);
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            ViewCompat.setTransitionName(holder.thumbnailView, getString(R.string.transition_image) + position);
+            ViewCompat.setTransitionName(holder.titleView, getString(R.string.transition_title) + position);
+            ViewCompat.setTransitionName(holder.subtitleView, getString(R.string.transition_subtitle) + position);
             holder.subtitleView.setText(
                     DateUtils.getRelativeTimeSpanString(
                             mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),

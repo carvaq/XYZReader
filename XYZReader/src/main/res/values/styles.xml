@@ -17,15 +17,17 @@
 
 <resources>
 
-	<style name="Theme.Bacon" parent="@style/Theme.AppCompat.Light.NoActionBar">
+	<style name="Bacon" parent="@style/Theme.AppCompat.Light.NoActionBar">
 		<item name="colorPrimary">@color/theme_primary</item>
 		<item name="colorPrimaryDark">@color/theme_primary_dark</item>
 		<item name="colorAccent">@color/theme_accent</item>
 	</style>
 
-	<style name="Theme.Bacon.Detail"/>
+	<style name="Bacon.Main"/>
 
-	<style name="Theme.Bacon.Toolbar" parent="Base.Widget.AppCompat.Toolbar">
+	<style name="Bacon.Detail"/>
+
+	<style name="Bacon.Toolbar" parent="Base.Widget.AppCompat.Toolbar">
 		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">?actionBarSize</item>
 		<item name="android:layout_marginLeft">@dimen/list_toolbar_side_margin</item>
