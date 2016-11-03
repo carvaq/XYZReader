@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
@@ -43,7 +45,6 @@ public class ArticleDetailFragment extends Fragment implements
     private long mItemId;
     private View mRootView;
 
-    private View mMetaBar;
     private ImageView mPhotoView;
     private boolean mIsCard = false;
     private CollapsingToolbarLayout mPhotoContainerView;
@@ -96,7 +97,6 @@ public class ArticleDetailFragment extends Fragment implements
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
 
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
-        mMetaBar = mRootView.findViewById(R.id.meta_bar);
         mPhotoContainerView = (CollapsingToolbarLayout) mRootView.findViewById(R.id.photo_container);
 
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
@@ -109,25 +109,44 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
+        Toolbar toolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
+        getActivityCast().setSupportActionBar(toolbar);
+        if (getActivityCast().getSupportActionBar() != null) {
+            getActivityCast().getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getActivityCast().getSupportActionBar().setHomeButtonEnabled(true);
+            getActivityCast().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         bindViews();
         return mRootView;
     }
 
-    private void updateStatusBar(Bitmap bitmap) {
-        int defaultColor;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            defaultColor = getResources().getColor(R.color.theme_primary, getActivityCast().getTheme());
-        } else {
-            //noinspection deprecation
-            defaultColor = getResources().getColor(R.color.theme_primary);
-        }
+    private void updateUiWithGeneratedColors(Bitmap bitmap) {
         Palette palette = new Palette.Builder(bitmap).generate();
+        if (palette.getVibrantSwatch() != null) {
+            applySwatch(palette.getVibrantSwatch());
+        } else if (palette.getDominantSwatch() != null) {
+            applySwatch(palette.getVibrantSwatch());
+        } else if (palette.getMutedSwatch() != null) {
+            applySwatch(palette.getMutedSwatch());
+        } else {
+            mPhotoContainerView.setCollapsedTitleTextColor(Color.WHITE);
+            mPhotoContainerView.setExpandedTitleColor(Color.WHITE);
+        }
+    }
+
+
+    private void applySwatch(Palette.Swatch swatch) {
+        if (swatch == null) {
+            return;
+        }
+        mPhotoContainerView.setCollapsedTitleTextColor(swatch.getTitleTextColor());
+        mPhotoContainerView.setExpandedTitleColor(swatch.getTitleTextColor());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getActivityCast().getWindow()
-                    .setStatusBarColor(palette.getVibrantColor(defaultColor));
+                    .setStatusBarColor(swatch.getRgb());
         }
-        mMetaBar.setBackgroundColor(palette.getVibrantColor(defaultColor));
-        mPhotoContainerView.setContentScrimColor(palette.getLightVibrantColor(defaultColor));
+        mPhotoContainerView.setContentScrimColor(swatch.getRgb());
     }
 
     private void bindViews() {
@@ -145,7 +164,9 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);
-            titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            String title = mCursor.getString(ArticleLoader.Query.TITLE);
+            titleView.setText(title);
+            mPhotoContainerView.setTitle(title);
             bylineView.setText(Html.fromHtml(
                     DateUtils.getRelativeTimeSpanString(
                             mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
@@ -162,7 +183,7 @@ public class ArticleDetailFragment extends Fragment implements
                             Bitmap bitmap = imageContainer.getBitmap();
                             if (bitmap != null) {
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                                updateStatusBar(bitmap);
+                                updateUiWithGeneratedColors(bitmap);
                             }
                         }
 
