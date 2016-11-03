@@ -2,6 +2,6 @@
 <resources>
 
 	<style name="Theme.Bacon.Detail">
-		<item name="android:statusBarColor">@android:color/transparent</item>
+		<item name="android:statusBarColor">@android:color/background_dark</item>
 	</style>
 </resources>
