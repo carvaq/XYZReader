@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.NavUtils;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +19,7 @@ import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -44,7 +46,6 @@ public class ArticleDetailFragment extends Fragment implements
     private View mRootView;
 
     private ImageView mPhotoView;
-    private boolean mIsCard = false;
     private CollapsingToolbarLayout mPhotoContainerView;
 
     /**
@@ -70,7 +71,6 @@ public class ArticleDetailFragment extends Fragment implements
             mItemId = getArguments().getLong(ARG_ITEM_ID);
         }
 
-        mIsCard = getResources().getBoolean(R.bool.detail_is_card);
         setHasOptionsMenu(true);
     }
 
@@ -110,17 +110,21 @@ public class ArticleDetailFragment extends Fragment implements
         Toolbar toolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
         getActivityCast().setSupportActionBar(toolbar);
         if (getActivityCast().getSupportActionBar() != null) {
-            getActivityCast().getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getActivityCast().getSupportActionBar().setHomeButtonEnabled(true);
             getActivityCast().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //onOptionsItemSelected not called https://stackoverflow.com/questions/26588917/appcompat-v7-toolbar-onoptionsitemselected-not-called/26590274#26590274
+                NavUtils.navigateUpFromSameTask(getActivity());
+            }
+        });
 
         bindViews();
         return mRootView;
     }
 
     private void updateUiWithGeneratedColors(Bitmap bitmap) {
-        mPhotoContainerView.setCollapsedTitleTextColor(Color.WHITE);
         Palette palette = new Palette.Builder(bitmap).generate();
         if (palette.getVibrantSwatch() != null) {
             applySwatch(palette.getVibrantSwatch());
@@ -131,13 +135,11 @@ public class ArticleDetailFragment extends Fragment implements
         } else {
             int color = palette.getDominantColor(Color.DKGRAY);
             applyColorToView(color);
-            mPhotoContainerView.setExpandedTitleColor(Color.WHITE);
         }
     }
 
 
     private void applySwatch(@NonNull Palette.Swatch swatch) {
-        mPhotoContainerView.setExpandedTitleColor(swatch.getBodyTextColor());
         applyColorToView(swatch.getRgb());
     }
 
@@ -227,14 +229,14 @@ public class ArticleDetailFragment extends Fragment implements
         bindViews();
     }
 
-    public int getUpButtonFloor() {
-        if (mPhotoContainerView == null || mPhotoView.getHeight() == 0) {
-            return Integer.MAX_VALUE;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(getActivity());
+                return true;
         }
-
-        // account for parallax
-        return mIsCard
-                ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight()
-                : mPhotoView.getHeight();
+        return super.onOptionsItemSelected(item);
     }
 }
