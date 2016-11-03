@@ -130,11 +130,11 @@ public class ArticleListActivity extends AppCompatActivity implements
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
 
                     Pair<View, String> p1 = Pair.create((View) vh.subtitleView,
-                            getString(R.string.transition_subtitle));
+                            ViewCompat.getTransitionName(vh.subtitleView));
                     Pair<View, String> p2 = Pair.create((View) vh.titleView,
-                            getString(R.string.transition_title));
+                            ViewCompat.getTransitionName(vh.titleView));
                     Pair<View, String> p3 = Pair.create((View) vh.thumbnailView,
-                            getString(R.string.transition_image));
+                            ViewCompat.getTransitionName(vh.thumbnailView));
                     ActivityOptionsCompat options = ActivityOptionsCompat.
                             makeSceneTransitionAnimation(ArticleListActivity.this, p1, p2, p3);
 
