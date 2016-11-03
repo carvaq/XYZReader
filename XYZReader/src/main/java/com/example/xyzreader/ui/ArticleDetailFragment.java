@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.ShareCompat;
@@ -40,6 +41,7 @@ public class ArticleDetailFragment extends Fragment implements
     private static final String TAG = "ArticleDetailFragment";
 
     public static final String ARG_ITEM_ID = "item_id";
+    private static final String EMPTY_TITLE = " ";
 
     private Cursor mCursor;
     private long mItemId;
@@ -47,6 +49,8 @@ public class ArticleDetailFragment extends Fragment implements
 
     private ImageView mPhotoView;
     private CollapsingToolbarLayout mPhotoContainerView;
+    private String mTitle;
+    private boolean mIsCard;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -121,6 +125,29 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
+        mIsCard = getResources().getBoolean(R.bool.detail_is_card);
+        if (mIsCard) {
+            //http://stackoverflow.com/questions/31662416/show-collapsingtoolbarlayout-title-only-when-collapsed
+            AppBarLayout appBarLayout = (AppBarLayout) mRootView.findViewById(R.id.app_bar_layout);
+            appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+                boolean isShow = false;
+                int scrollRange = -1;
+
+                @Override
+                public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                    if (scrollRange == -1) {
+                        scrollRange = appBarLayout.getTotalScrollRange();
+                    }
+                    if (scrollRange + verticalOffset == 0) {
+                        mPhotoContainerView.setTitle(mTitle);
+                        isShow = true;
+                    } else if (isShow) {
+                        mPhotoContainerView.setTitle(EMPTY_TITLE);//carefull there should a space between double quote otherwise it wont work
+                        isShow = false;
+                    }
+                }
+            });
+        }
         bindViews();
         return mRootView;
     }
@@ -164,9 +191,11 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);
-            String title = mCursor.getString(ArticleLoader.Query.TITLE);
-            titleView.setText(title);
-            mPhotoContainerView.setTitle(title);
+            mTitle = mCursor.getString(ArticleLoader.Query.TITLE);
+            titleView.setText(mTitle);
+            if (!mIsCard) {
+                mPhotoContainerView.setTitle(mTitle);
+            }
             bylineView.setText(Html.fromHtml(
                     DateUtils.getRelativeTimeSpanString(
                             mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),

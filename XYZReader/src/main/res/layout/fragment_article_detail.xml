@@ -6,6 +6,7 @@
 	android:fitsSystemWindows="true">
 
 	<android.support.design.widget.AppBarLayout
+		android:id="@+id/app_bar_layout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -17,7 +18,7 @@
 			android:layout_height="wrap_content"
 			android:background="@color/photo_placeholder"
 			app:layout_scrollFlags="scroll|exitUntilCollapsed"
-			app:titleEnabled="true">
+			app:title=" ">
 
 			<!--suppress AndroidLintContentDescription -->
 			<ImageView
@@ -40,53 +41,14 @@
 		android:id="@+id/scrollView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:paddingBottom="@dimen/detail_inner_vert_padding"
+		android:paddingLeft="@dimen/detail_inner_horiz_margin"
+		android:paddingRight="@dimen/detail_inner_horiz_margin"
+		android:paddingTop="@dimen/detail_inner_vert_padding"
+		app:behavior_overlapTop="@dimen/app_bar_overlap"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-		<com.example.xyzreader.ui.MaxWidthLinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:background="#fff"
-			android:maxWidth="@dimen/detail_card_max_width"
-			android:orientation="vertical"
-			android:paddingBottom="@dimen/detail_inner_vert_padding"
-			android:paddingLeft="@dimen/detail_inner_horiz_margin"
-			android:paddingRight="@dimen/detail_inner_horiz_margin"
-			android:paddingTop="@dimen/detail_inner_vert_padding">
-
-			<TextView
-				android:id="@+id/article_title"
-				style="?android:attr/textAppearanceLarge"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:fontFamily="sans-serif-condensed"
-				android:lineSpacingMultiplier="0.9"
-				android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
-				android:textSize="@dimen/detail_title_text_size"
-				android:textStyle="bold"
-				android:transitionName="@string/transition_title"/>
-
-			<TextView
-				android:id="@+id/article_byline"
-				style="?android:attr/textAppearanceSmall"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="@dimen/detail_inner_vert_padding"
-				android:textColor="@color/textColor"
-				android:transitionName="@string/transition_subtitle"/>
-
-			<TextView
-				android:id="@+id/article_body"
-				style="?android:attr/textAppearanceMedium"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:autoLink="all"
-				android:lineSpacingMultiplier="@fraction/detail_body_line_spacing_multiplier"
-				android:paddingBottom="@dimen/detail_body_bottom_margin"
-				android:textColorLink="@color/theme_accent"
-				android:textSize="@dimen/detail_body_text_size"/>
-
-		</com.example.xyzreader.ui.MaxWidthLinearLayout>
+		<include layout="@layout/content_fragment_article_detail"/>
 	</android.support.v4.widget.NestedScrollView>
 
 	<android.support.design.widget.FloatingActionButton

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.xyzreader.ui.MaxWidthLinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_gravity="center_horizontal"
+	android:background="#fff"
+	android:padding="@dimen/general_padding_content"
+	android:maxWidth="@dimen/detail_card_max_width"
+	android:orientation="vertical"
+	tools:showIn="@layout/fragment_article_detail">
+
+	<TextView
+		android:id="@+id/article_title"
+		style="?android:attr/textAppearanceLarge"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:fontFamily="sans-serif-condensed"
+		android:lineSpacingMultiplier="0.9"
+		android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
+		android:textSize="@dimen/detail_title_text_size"
+		android:textStyle="bold"
+		android:transitionName="@string/transition_title"/>
+
+	<TextView
+		android:id="@+id/article_byline"
+		style="?android:attr/textAppearanceSmall"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="@dimen/detail_inner_vert_padding"
+		android:textColor="@color/textColor"
+		android:transitionName="@string/transition_subtitle"/>
+
+	<TextView
+		android:id="@+id/article_body"
+		style="?android:attr/textAppearanceMedium"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:autoLink="all"
+		android:lineSpacingMultiplier="@fraction/detail_body_line_spacing_multiplier"
+		android:paddingBottom="@dimen/detail_body_bottom_margin"
+		android:textColorLink="@color/theme_accent"
+		android:textSize="@dimen/detail_body_text_size"/>
+
+</com.example.xyzreader.ui.MaxWidthLinearLayout>
+	
