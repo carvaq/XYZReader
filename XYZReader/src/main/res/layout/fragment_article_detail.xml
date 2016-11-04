@@ -9,6 +9,7 @@
 		android:id="@+id/app_bar_layout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:elevation="@dimen/app_bar_elevation"
 		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
 		<!-- grabbed some ideas from https://github.com/chrisbanes/cheesesquare/blob/master/app/src/main/res/layout/activity_detail.xml-->
@@ -58,6 +59,7 @@
 		android:layout_marginEnd="@dimen/fab_margin"
 		android:layout_marginRight="@dimen/fab_margin"
 		android:contentDescription="@string/action_share"
+		android:elevation="@dimen/fab_elevation"
 		android:src="@drawable/ic_share"
 		app:fabSize="normal"/>
 
